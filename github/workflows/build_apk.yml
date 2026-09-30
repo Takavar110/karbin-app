@@ -13,31 +13,32 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
           channel: 'stable'
           cache: true
 
-      - name: Create Flutter Android Project Structure
+      - name: Generate Android Skeleton
         run: |
-          flutter create . --project-name=karbin_app --org=com.karbin.app --platforms=android
+          flutter create --org com.karbin.app --project-name karbin_app --platforms android .
 
-      - name: Get Dependencies
-        run: flutter pub get
+      - name: Install Dependencies
+        run: |
+          flutter pub get
 
-      - name: Build APK (Release)
-        run: flutter build apk --release
+      - name: Build APK Release
+        run: |
+          flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: KarBin-Release-APK
+          name: KarBin-App-Release
           path: build/app/outputs/flutter-apk/app-release.apk
